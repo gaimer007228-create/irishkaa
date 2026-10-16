@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Улыбайся)</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Comfortaa', cursive;
+        background: linear-gradient(180deg, #fff0f5 0%, #ffe4ec 50%, #ffd1dc 100%);
+        color: #4a148c;
+        overflow-x: hidden;
+    }
+
+    /* ===== ЗАГОЛОВОК ===== */
+    .header {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        position: relative;
+    }
+
+    .header h1 {
+        font-family: 'Pacifico', cursive;
+        font-size: 3rem;
+        color: #e91e63;
+        margin-bottom: 20px;
+        animation: fadeIn 2s ease;
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        color: #6a1b9a;
+        animation: fadeIn 3s ease;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+
+    .scroll-hint {
+        position: absolute;
+        bottom: 40px;
+        font-size: 2rem;
+        color: #e91e63;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(15px); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== ТАЙМЛАЙН ===== */
+    .timeline {
+        position: relative;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 60px 20px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 3px;
+        background: linear-gradient(180deg, transparent, #e91e63, #ba68c8, #e91e63, transparent);
+        transform: translateX(-50%);
+        border-radius: 2px;
+    }
+
+    .memory {
+        position: relative;
+        width: 50%;
+        padding: 40px 40px;
+        opacity: 0;
+        transform: translateY(80px);
+        transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .memory.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .memory.left {
+        left: 0;
+        text-align: right;
+    }
+
+    .memory.right {
+        left: 50%;
+        text-align: left;
+    }
+
+    .memory::after {
+        content: '❤';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: white;
+        border: 3px solid #e91e63;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e91e63;
+        font-size: 0.8rem;
+        z-index: 2;
+        box-shadow: 0 0 15px rgba(233, 30, 99, 0.5);
+    }
+
+    .memory.left::after { right: -15px; }
+    .memory.right::after { left: -15px; }
+
+    .memory img {
+        width: 380px;
+        height: 380px;
+        object-fit: cover;
+        border-radius: 20px;
+        display: inline-block;
+        box-shadow: 0 15px 40px rgba(233, 30, 99, 0.25);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        background: #ffe4ec;
+    }
+
+    .memory img:hover {
+        transform: scale(1.03) rotate(-1deg);
+        box-shadow: 0 20px 50px rgba(233, 30, 99, 0.4);
+    }
+
+    .date {
+        font-family: 'Pacifico', cursive;
+        font-size: 1.4rem;
+        color: #e91e63;
+        margin: 15px 0 8px;
+    }
+
+    .caption {
+        font-size: 1rem;
+        color: #6a1b9a;
+        line-height: 1.5;
+        max-width: 380px;
+        display: inline-block;
+    }
+
+    /* ===== КНОПКА МУЗЫКИ ===== */
+    .music-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #e91e63;
+        color: white;
+        border: none;
+        font-size: 1.3rem;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
+        transition: 0.3s;
+    }
+
+    .music-btn:hover {
+        transform: scale(1.1);
+        background: #c2185b;
+    }
+
+    /* ===== ЛЕТЯЩИЕ СЕРДЕЧКИ ===== */
+    .hearts {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .heart {
+        position: absolute;
+        color: #e91e63;
+        font-size: 20px;
+        animation: floatUp linear infinite;
+        opacity: 0.5;
+    }
+
+    @keyframes floatUp {
+        from { transform: translateY(100vh) scale(0.5); opacity: 0; }
+        20% { opacity: 0.7; }
+        to { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* ===== ВОПРОС-СЮРПРИЗ ===== */
+    .quiz {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .quiz h2 {
+        font-family: 'Pacifico', cursive;
+        font-size: 2rem;
+        color: #e91e63;
+        margin-bottom: 20px;
+    }
+
+    .quiz-question {
+        font-size: 1.4rem;
+        color: #6a1b9a;
+        margin-bottom: 30px;
+    }
+
+    .quiz-form {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .quiz-form input {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        font-family: 'Comfortaa', cursive;
+        border: 3px solid #e91e63;
+        border-radius: 50px;
+        outline: none;
+        text-align: center;
+        width: 180px;
+        color: #4a148c;
+        background: white;
+        transition: 0.3s;
+    }
+
+    .quiz-form input:focus {
+        box-shadow: 0 0 20px rgba(233, 30, 99, 0.4);
+    }
+
+    .quiz-form button {
+        background: #e91e63;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-family: 'Comfortaa', cursive;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+    }
+
+    .quiz-form button:hover {
+        background: #c2185b;
+        transform: translateY(-3px);
+    }
+
+    .result {
+        margin-top: 30px;
+        font-size: 1.3rem;
+        line-height: 1.6;
+        max-width: 600px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+    }
+
+    .result.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .result.success {
+        font-family: 'Pacifico', cursive;
+        color: #e91e63;
+        font-size: 1.8rem;
+        animation: pop 0.6s ease;
+    }
+
+    .result.error {
+        color: #6a1b9a;
+    }
+
+    @keyframes pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        70% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ===== АДАПТИВ (телефон) ===== */
+    @media (max-width: 768px) {
+        .header h1 { font-size: 2rem; }
+        .header p { font-size: 1rem; }
+
+        .timeline::before { left: 20px; }
+
+        .memory {
+            width: 100%;
+            padding: 30px 20px 30px 60px;
+            text-align: left !important;
+        }
+
+        .memory.left, .memory.right { left: 0; }
+
+        .memory.left::after,
+        .memory.right::after {
+            left: 5px;
+            right: auto;
+        }
+
+        .memory img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+        }
+
+        .caption { max-width: 100%; }
+
+        .quiz h2 { font-size: 1.5rem; }
+        .quiz-question { font-size: 1.1rem; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- Летящие сердечки -->
+    <div class="hearts" id="hearts"></div>
+
+    <!-- Кнопка музыки -->
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🔇</button>
+    <audio id="bgMusic" loop>
+        <source src="mus/hdh.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ===== ЗАГОЛОВОК ===== -->
+    <section class="header">
+        <h1>Котяшкинс</h1>
+        <p>Доброе утро)<br>Чуть чуть решил тебе подсластить серые осенние подьёмы)<br>Включи музыку сначала справа)</p>
+        <div class="scroll-hint">↓</div>
+    </section>
+
+    <!-- ===== ТАЙМЛАЙН ===== -->
+    <div class="timeline">
+
+        <!-- 1. ФОТО (слева) -->
+        <div class="memory left">
+            <img src="img/img1.jpg" alt="Наше первое милое фото">
+            <div class="date">Август 2026</div>
+            <div class="caption">Первая наша милая фотка)</div>
+        </div>
+
+        <!-- 2. ФОТО (справа) -->
+        <div class="memory right">
+            <img src="img/img4.jpg" alt="Наше фото">
+            <div class="date">Август 2026</div>
+            <div class="caption">Вычисляю где ты...</div>
+        </div>
+
+        <!-- 3. ФОТО (слева) -->
+        <div class="memory left">
+            <img src="img/img2.jpg" alt="Наше фото">
+            <div class="date">Август 2026</div>
+            <div class="caption">Лучшая обнималка)</div>
+        </div>
+
+        <!-- 4. ФОТО (справа) -->
+        <div class="memory right">
+            <img src="img/img6.jpg" alt="Наше фото">
+            <div class="date">Август 2026</div>
+            <div class="caption">Первый раз вместе в Бресте</div>
+        </div>
+
+        <!-- 5. ФОТО (слева) -->
+        <div class="memory left">
+            <img src="img/img3.jpg" alt="Ещё момент">
+            <div class="date">Август 2026</div>
+            <div class="caption">Просто языкашки ну</div>
+        </div>
+
+        <!-- 6. ФОТО (справа) -->
+        <div class="memory right">
+            <img src="img/img5.jpg" alt="Ещё момент">
+            <div class="date">Июль 2026</div>
+            <div class="caption">Ты в моей любимой кофте. Смешная.</div>
+        </div>
+
+    </div>
+
+    <!-- ===== ВОПРОС-СЮРПРИЗ ===== -->
+    <section class="quiz">
+        <h2>Напоследок проверочка</h2>
+        <p class="quiz-question">Сколько у меня зрение?</p>
+
+        <div class="quiz-form">
+            <input type="text" id="answer" placeholder="Введи число" inputmode="decimal">
+            <button onclick="checkAnswer()">Проверить</button>
+        </div>
+
+        <div id="result" class="result"></div>
+    </section>
+
+<script>
+    /* ===== ПОЯВЛЕНИЕ БЛОКОВ ПРИ СКРОЛЛЕ ===== */
+    const memories = document.querySelectorAll('.memory');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+
+    memories.forEach(memory => observer.observe(memory));
+
+    /* ===== ЛЕТЯЩИЕ СЕРДЕЧКИ ===== */
+    const heartsContainer = document.getElementById('hearts');
+    const symbols = ['❤', '💕', '💖', '💗', '💓'];
+
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        heart.style.animationDuration = (Math.random() * 8 + 8) + 's';
+        heart.style.animationDelay = Math.random() * 5 + 's';
+        heartsContainer.appendChild(heart);
+        setTimeout(() => heart.remove(), 16000);
+    }
+
+    setInterval(createHeart, 800);
+    for (let i = 0; i < 8; i++) setTimeout(createHeart, i * 300);
+
+    /* ===== МУЗЫКА ===== */
+    const bgMusic = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+    let musicPlaying = false;
+
+    function toggleMusic() {
+        if (musicPlaying) {
+            bgMusic.pause();
+            musicBtn.textContent = '🔇';
+            musicPlaying = false;
+        } else {
+            bgMusic.play();
+            musicBtn.textContent = '🔊';
+            musicPlaying = true;
+        }
+    }
+
+    /* ===== ВОПРОС-СЮРПРИЗ ===== */
+    function checkAnswer() {
+        const input = document.getElementById('answer');
+        const result = document.getElementById('result');
+
+        // 👇 МЕНЯЙ ЗДЕСЬ: убираем запятые, пробелы и меняем запятую на точку
+        const value = input.value.trim().replace(',', '.').replace(/\s/g, '');
+
+        // 👇 МЕНЯЙ ЗДЕСЬ: правильный ответ
+        const correctAnswer = '35.5';
+
+        // 👇 МЕНЯЙ ЗДЕСЬ: текст при правильном ответе
+        const successText = 'Умничка! Люблю тебя! Хорошего дня)';
+
+        // 👇 МЕНЯЙ ЗДЕСЬ: текст при неправильном ответе
+        const errorText = 'Да хуй ты угадала)';
+
+        result.classList.remove('success', 'error');
+
+        if (value === correctAnswer) {
+            result.textContent = successText;
+            result.classList.add('success', 'show');
+            input.disabled = true;
+            input.style.borderColor = '#4caf50';
+        } else {
+            result.textContent = errorText;
+            result.classList.add('error', 'show');
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    // Enter тоже работает
+    document.getElementById('answer').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+    });
+</script>
+
+</body>
+</html>
